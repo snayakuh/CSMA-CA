@@ -1,0 +1,43 @@
+import numpy as np
+import random
+import matplotlib.pyplot as py
+
+
+tSlot=1.0
+pktSize=1.0
+x=np.array([])
+
+
+def arr(lambd):
+    global tSlot
+    cnt = 0
+    t = 0
+    while t < tSlot:
+        t += random.expovariate(lambd)
+        cnt += 1                        ##Counts the number of packets that wait for the current transmission to complete.
+    return cnt
+
+
+def getSucc(lambd):
+    nSlot=1000
+    nPkts=0
+    sPkts = 0
+    for i in range(nSlot):
+        nPkts+=arr(lambd)
+        if nPkts == 0:
+            sPkts += 0
+        else:
+            sPkts += 1
+    return float(sPkts)/nPkts     ##Throughput equals the ratio of successful packets to total number of packets.
+
+print("\n\n-----------------------\n|  LAMBD   |Throughput|\n-----------------------")
+for lambd in np.arange(0.01, 5, .06):
+    temp = lambd*getSucc(lambd)
+    print("| %f | %f |" %(lambd,temp))
+    x=np.append(x, temp)
+
+py.plot(x)
+py.ylabel("S (Throughput)\n")
+py.xlabel("G (Packet attempts)\n")
+py.title("Performance of 1-Persistent CSMA-CA\n")
+py.show()
